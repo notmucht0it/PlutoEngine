@@ -1,8 +1,8 @@
 #pragma once
 
-#include "vec2.hpp"
-#include "vec3.hpp"
-#include "vec4.hpp"
+#include "vec2.hpp" // Implemented
+#include "vec3.hpp" // Implemented
+#include "vec4.hpp" // Implemented
 
 #include "mat2.hpp"
 #include "mat3.hpp"
