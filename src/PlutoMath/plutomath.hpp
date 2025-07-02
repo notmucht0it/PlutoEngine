@@ -10,3 +10,5 @@
 
 #include "transform.hpp"
 #include "projection.hpp"
+
+#include "scalar_utils.hpp"
