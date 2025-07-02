@@ -144,7 +144,7 @@ namespace plutom{
     template<typename T>
     constexpr vec2<T> lerp(const vec2<T>& a, const vec2<T>& b, const vec2<T>& t){
         if (t.x < T(0) || t.x > T(1) || t.y < T(0) || t.y > T(1))
-            throw std::invalid_argument("t vector must its x and y values between 0 and 1");
+            throw std::invalid_argument("t vector values must be between 0 and 1");
         return {a.x * (T(1) - t.x) + b.x * t.x, a.y * (T(1) - t.y) + b.y * t.y};
     }
 
@@ -176,8 +176,26 @@ namespace plutom{
     }
 
     template<typename T>
-    vec2<T> faceforward(const vec2<T>& n, const vec2<T>& i, const vec2<T>& nref) {
+    constexpr vec2<T> faceforward(const vec2<T>& n, const vec2<T>& i, const vec2<T>& nref) {
         return (nref.dot(i) < T(0)) ? n : -n;
+    }
+
+    template<typename T>
+    constexpr vec2<T> reflect(const vec2<T>& v, const vec2<T>& n) {
+        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        vec2<T> n_norm = n.normalize();
+        return v - T(2) * v.dot(n_norm) * n_norm;
+    }
+
+    template<typename T>
+    constexpr vec2<T> refract(const vec2<T>& v, const vec2<T>& n, T eta) {
+        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        vec2<T> n_norm = n.normalize();
+        T cosI = -n_norm.dot(v);
+        T sinT2 = eta * eta * (T(1) - cosI * cosI);
+        if (sinT2 > T(1)) return vec2<T>(T(0)); // Total internal reflection
+        T cosT = std::sqrt(T(1) - sinT2);
+        return eta * v + (eta * cosI - cosT) * n_norm;
     }
 
     using vec2f = vec2<float>;
