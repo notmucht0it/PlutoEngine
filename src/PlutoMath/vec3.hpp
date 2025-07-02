@@ -13,7 +13,7 @@ namespace plutom{
     struct vec3{
         T x, y, z;
 
-        constexpr vec3() : x(0), y(0), z(0) {}
+        constexpr vec3() : x(T(0)), y(T(0)), z(T(0)) {}
         explicit constexpr vec3(T val) : x(val), y(val), z(val) {}
         explicit  constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
         template<typename U>
@@ -40,7 +40,7 @@ namespace plutom{
             return {x - other.x, y - other.y, z - other.z};
         }
 
-        constexpr vec3 hadamard(const vec3& other) const{
+        constexpr vec3 cwise_mul(const vec3& other) const{
             return {x*other.x, y*other.y, z*other.z};
         }
 
@@ -200,6 +200,24 @@ namespace plutom{
         if (sinT2 > T(1)) return vec3<T>(T(0)); // Total internal reflection
         T cosT = std::sqrt(T(1) - sinT2);
         return eta * v + (eta * cosI - cosT) * n_norm;
+    }
+
+    template<typename T>
+    constexpr vec3<T> min(const vec3<T>& a, const vec3<T>& b) {
+        return {std::min(a.x,b.x), std::min(a.y,b.y),
+                std::min(a.z,b.z)};
+    }
+
+    template<typename T>
+    constexpr vec3<T> max(const vec3<T>& a, const vec3<T>& b) {
+        return {std::max(a.x,b.x), std::max(a.y,b.y),
+                std::max(a.z,b.z)};
+    }
+
+    template<typename T>
+    constexpr vec3<T> abs(const vec3<T>& a) {
+        return {std::abs(a.x), std::abs(a.y),
+                std::abs(a.z)};
     }
 
     using vec3f = vec3<float>;

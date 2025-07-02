@@ -13,7 +13,7 @@ namespace plutom{
     struct vec2{
         T x, y;
 
-        constexpr vec2() : x(0), y(0) {}
+        constexpr vec2() : x(T(0)), y(T(0)) {}
         explicit constexpr vec2(T val) : x(val), y(val) {}
         explicit  constexpr vec2(T x, T y) : x(x), y(y) {}
         template<typename U>
@@ -38,7 +38,7 @@ namespace plutom{
             return {x - other.x, y - other.y};
         }
 
-        constexpr vec2 hadamard(const vec2& other) const{
+        constexpr vec2 cwise_mul(const vec2& other) const{
             return {x*other.x, y*other.y};
         }
 
@@ -196,6 +196,21 @@ namespace plutom{
         if (sinT2 > T(1)) return vec2<T>(T(0)); // Total internal reflection
         T cosT = std::sqrt(T(1) - sinT2);
         return eta * v + (eta * cosI - cosT) * n_norm;
+    }
+
+    template<typename T>
+    constexpr vec2<T> min(const vec2<T>& a, const vec2<T>& b) {
+        return {std::min(a.x,b.x), std::min(a.y,b.y)};
+    }
+
+    template<typename T>
+    constexpr vec2<T> max(const vec2<T>& a, const vec2<T>& b) {
+        return {std::max(a.x,b.x), std::max(a.y,b.y)};
+    }
+
+    template<typename T>
+    constexpr vec2<T> abs(const vec2<T>& a) {
+        return {std::abs(a.x), std::abs(a.y)};
     }
 
     using vec2f = vec2<float>;
