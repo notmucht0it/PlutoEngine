@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "util/shader.hpp"
+#include <filesystem>
 
 
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -44,7 +45,7 @@ int main()
     // Sets callback so when a key pressed that function is excuted
     glfwSetKeyCallback(window, key_callback);
 
-    Shader ourShader("../shaders/shader.vs","../shaders/shader.fs");
+    Shader ourShader("shaders/shader.vs","shaders/shader.fs");
 
     float vertices1[] = {
         //positions         //colors
@@ -52,23 +53,19 @@ int main()
         0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
         0.0f, 0.5f, 0.0f,  0.0f, 0.0f, 1.0f// bottom left
     };
-    float vertices2[] = {
-        0.25f,-0.25f, 0.0f,
-        0.0f, -0.25f, 0.0f,
-        0.125f, 0.25f, 0.0f,
-    };
+
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };  
 
 
-    unsigned int VBOs[2], VAOs[2], EBO;
-    glGenVertexArrays(2,VAOs);
-    glGenBuffers(2, VBOs);
+    unsigned int VBO, VAO, EBO;
+    glGenVertexArrays(1,&VAO);
+    glGenBuffers(1, &VBO);
     // glGenBuffers(1,&EBO);
-    glBindVertexArray(VAOs[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -83,10 +80,6 @@ int main()
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
 
-    // int nrAttributes;
-    // glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    // std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
-
     while(!glfwWindowShouldClose(window)){
         // Runs through possible events, key press, resizing, etc.
         glfwPollEvents(); 
@@ -97,21 +90,19 @@ int main()
 
         ourShader.use();
         
-        // float timeValue = glfwGetTime();
-        // float posValue = (sin(timeValue) / 2.0f) + 0.5f;
-        // ourShader.setFloat("horizontalOffset",posValue);
+        float timeValue = glfwGetTime();
+        float posValue = (sin(timeValue) / 2.0f) + 0.5f;
+        ourShader.setFloat("horizontalOffset",posValue);
         
-        glBindVertexArray(VAOs[0]);
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        //glBindVertexArray(VAOs[1]);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
         //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
 
         glfwSwapBuffers(window);
     }
 
-    glDeleteVertexArrays(2,VAOs);
-    glDeleteBuffers(2,VBOs);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
     glfwTerminate();
     return 0;
 }
