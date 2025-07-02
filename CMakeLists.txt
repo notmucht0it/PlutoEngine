@@ -21,6 +21,9 @@ target_include_directories(glad PUBLIC
     external/glad/include
 )
 
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/external)
+
 # Your executable
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -34,6 +37,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME}
     glad
     glfw
+    stb
     ${CMAKE_DL_LIBS}
 )
 
