@@ -58,4 +58,28 @@ namespace plutom{
         }
         return result;
     }
+
+    template<typename T>
+    constexpr mat4<T> ortho(const T left, const T right, const T bottom, const T top, const T near, const T far){
+        mat4<T> ret = mat4<T>::identity();
+        ret[0][0] = 2 / (right - left);
+        ret[1][1] = 2 / (top - bottom);
+        ret[2][2] = -2 / (far - near);
+        ret[3][0] = - (right + left) / (right - left);
+        ret[3][1] = - (top + bottom) / (top - bottom);
+        ret[3][2] = - (far + near) / (far - near);
+        return ret;
+    }
+
+    template<typename T>
+    constexpr mat4<T> perspective(const T fovRad, const T aspectRatio, const T near, const T far){
+        const T f = 1 / std::tan(fovRad / 2);
+        mat4<T> ret = mat4<T>();
+        ret[0][0] = f / aspectRatio;
+        ret[1][1] = f;
+        ret[2][2] = -(far + near) / (near - far);
+        ret[2][3] = -1;
+        ret[3][2] = -(2 * far * near) / (near - far);
+        return ret;
+    }
 }

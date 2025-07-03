@@ -155,8 +155,8 @@ namespace transform3D{
     template<typename T>
     constexpr mat4<T> rotateX(T theta){
         return mat4<T>{T(1),T(0),T(0),T(0),
-                       T(0), std::cos(theta), std::sin(theta),T(0),
-                       T(0),-std::sin(theta), std::cos(theta),T(0),
+                       T(0), std::cos(-theta), std::sin(-theta),T(0),
+                       T(0),-std::sin(-theta), std::cos(-theta),T(0),
                        T(0),T(0),T(0),T(1)};
     }
 
@@ -167,9 +167,9 @@ namespace transform3D{
 
     template<typename T>
     constexpr mat4<T> rotateY(T theta){
-        return mat4<T>{std::cos(theta),T(0),std::sin(theta),T(0),
+        return mat4<T>{std::cos(-theta),T(0),std::sin(-theta),T(0),
                        T(0), T(1), T(0),T(0),
-                       -std::sin(theta),T(0), std::cos(theta),T(0),
+                       -std::sin(-theta),T(0), std::cos(-theta),T(0),
                        T(0),T(0),T(0),T(1)};
     }
 
@@ -180,8 +180,8 @@ namespace transform3D{
 
     template<typename T>
     constexpr mat4<T> rotateZ(T theta){
-        return mat4<T>{std::cos(theta),-std::sin(theta),T(0),T(0),
-                       std::sin(theta), std::cos(theta),T(0),T(0),
+        return mat4<T>{std::cos(-theta),-std::sin(-theta),T(0),T(0),
+                       std::sin(-theta), std::cos(-theta),T(0),T(0),
                        T(0),T(0),T(1),T(0),
                        T(0),T(0),T(0),T(1)};
     }
@@ -189,6 +189,24 @@ namespace transform3D{
     template<typename T>
     constexpr mat4<T> rotateZ(const mat4<T>& mat, T theta){
         return mat * rotateZ(theta);
+    }
+
+    template<typename T>
+    constexpr mat4<T> rotate(T theta, const vec3<T>& axis){
+        vec3<T> axisNorm = axis.normalize();
+        T cos = std::cos(-theta);
+        T oCos = T(1) - cos;
+        T sin = std::sin(-theta);
+        T x = axisNorm.x, y = axisNorm.y, z = axisNorm.z;
+        return mat4<T>{ x * x * oCos + cos, x * y * oCos + z * sin, x * z * oCos - y * sin, T(0),
+                        x * y * oCos - z * sin, y * y * oCos + cos, y * z * oCos + x * sin, T(0),
+                        x * z * oCos + y * sin, y * z * oCos - x * sin, z * z * oCos + cos, T(0),
+                        T(0), T(0), T(0), T(1)};
+    }
+
+    template<typename T>
+    constexpr mat4<T> rotate(const mat4<T>& mat, T theta, const vec3<T>& axis){
+        return mat * rotate(theta, axis);
     }
 }
 }

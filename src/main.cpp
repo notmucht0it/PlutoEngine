@@ -12,6 +12,8 @@
 
 constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
+constexpr float WID = 800.0, HIGH = 600.0f;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -41,6 +43,7 @@ int main()
         return -1;
     }
 
+    glEnable(GL_DEPTH_TEST);
     //Sets GL rendering to specific portion of the window
     glViewport(0, 0, WIDTH, HEIGHT);
     // Handles resizing so window doesnt crash
@@ -48,14 +51,50 @@ int main()
     // Sets callback so when a key pressed that function is excuted
     glfwSetKeyCallback(window, key_callback);
 
-    Shader ourShader("shaders/shader.vs","shaders/shader.fs");
+    const Shader ourShader("shaders/shader.vs","shaders/shader.fs");
 
     constexpr float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f  // top left 
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     const unsigned int indices[] = {  // note that we start from 0!
@@ -75,13 +114,13 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), static_cast<void*>(nullptr));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER,0);
@@ -126,40 +165,42 @@ int main()
 
     //std::cout << trans << std::endl;
 
+    //plutom::mat4f model = plutom::transform3D::rotate(plutom::radians(-55.0f), plutom::vec3f(1.0f,0.0f,0.0f));
+    plutom::mat4f view = plutom::transform3D::translate(plutom::vec3f(0.0f,0.0f,-3.0f));
+    plutom::mat4f projection = plutom::perspective(plutom::radians(45.0f), WID/HIGH, 0.1f, 100.0f);
+
     while(!glfwWindowShouldClose(window)){
         // Runs through possible events, key press, resizing, etc.
         glfwPollEvents(); 
 
         // Clears the color buffer so if things where moving they are not left on the screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //float timeValue = glfwGetTime();
         //float posValue = (sin(timeValue) / 2.0f) + 0.5f;
-        //ourShader.setFloat("horizontalOffset",posValue);
-
-        ourShader.setFloat("visible",percent);
-
-        plutom::mat4f trans = plutom::transform3D::rotateZ(static_cast<float>(glfwGetTime()));
-        trans = plutom::transform3D::translate(trans,plutom::vec3(0.5f,-0.5f,0.0f));
-        
-        ourShader.setMat4f("transform", trans);
+        //ourShader.setFloat("horizontalOffset",posValue)
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textures[1]);
-        ourShader.use();
-        glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
-        trans = plutom::transform3D::translate(plutom::vec3(-0.5f,0.5f,0.0f));
-        trans = plutom::transform3D::scale(trans,std::sin(static_cast<float>(glfwGetTime())));
-        ourShader.setMat4f("transform", trans);
-        ourShader.use();
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
-        
 
+        ourShader.use();
+
+        plutom::mat4f model = plutom::mat4f::identity();
+        model = plutom::transform3D::rotate(model, static_cast<float>(glfwGetTime()) * plutom::radians(50.0f), plutom::vec3f(0.5f,1.0f,0.0f));
+
+        ourShader.setFloat("visible",percent);
+
+        ourShader.setMat4f("model", model);
+        ourShader.setMat4f("view", view);
+        ourShader.setMat4f("projection", projection);
+
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         glfwSwapBuffers(window);
     }
 
