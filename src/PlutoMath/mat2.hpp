@@ -12,7 +12,7 @@ namespace plutom{
         vec2<T> columns[2];
 
         constexpr mat2() : columns{vec2<T>{T(0), T(0)}, vec2<T>{T(0), T(0)}} {}
-        constexpr mat2(T s) : columns{vec2<T>{s, T(0)}, vec2<T>{T(0), s}} {}
+        constexpr explicit mat2(T s) : columns{vec2<T>{s, T(0)}, vec2<T>{T(0), s}} {}
         constexpr mat2(const vec2<T>& col0, const vec2<T>& col1) : columns{col0, col1} {}
         constexpr mat2(T s1,T s2,T s3,T s4) : columns{vec2<T>{s1, s3}, vec2<T>{s2, s4}} {}
 
@@ -101,23 +101,19 @@ namespace plutom{
             return columns[0].x * columns[1].y - columns[1].x * columns[0].y;
         }
 
-        constexpr T minor(std::size_t row, std::size_t col){
+        constexpr T minor(const std::size_t row, const std::size_t col){
             if(row >= 2 || col >= 2) throw std::out_of_range("Index out of bounds for 2 by 2 matrix");
-
-            T result;
 
             std::size_t r = 0;
             for(std::size_t i = 0; i < 2; ++i){
-                std::size_t c = 0;
                 if(i == row) continue;
                 for(std::size_t j = 0; j < 2; ++j){
                     if(j == col) continue;
-                    //result[c][r] = columns[j][i]; 
                     return columns[j][i];
-                    ++c;
                 }
                 ++r;
             }
+            return T(0);
         }
 
         constexpr mat2 cofactor() const{

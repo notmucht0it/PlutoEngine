@@ -14,18 +14,18 @@ namespace plutom{
         T x, y, z;
 
         constexpr vec3() : x(T(0)), y(T(0)), z(T(0)) {}
-        constexpr vec3(T val) : x(val), y(val), z(val) {}
+        constexpr explicit vec3(T val) : x(val), y(val), z(val) {}
         constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
         template<typename U>
-        constexpr vec3(const vec3<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)), z(static_cast<T>(other.z)) {}
+        constexpr explicit vec3(const vec3<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)), z(static_cast<T>(other.z)) {}
 
-        T& operator[](std::size_t i) {
+        T& operator[](const std::size_t i) {
             if (i == 0) return x;
             if (i == 1) return y;
             if (i == 2) return z;
             throw std::out_of_range("vec3 index must be 0, 1, or 2");
         }
-        const T& operator[](std::size_t i) const {
+        const T& operator[](const std::size_t i) const {
             if (i == 0) return x;
             if (i == 1) return y;
             if (i == 2) return z;
@@ -33,12 +33,7 @@ namespace plutom{
         }
 
         // Assignment from same type
-        constexpr vec3<T>& operator=(const vec3<T>& other) {
-            x = other.x;
-            y = other.y;
-            z = other.z;
-            return *this;
-        }
+        constexpr vec3<T>& operator=(const vec3<T>& other) = default;
 
         // Assignment from different type
         template<typename U>
@@ -122,7 +117,7 @@ namespace plutom{
         }
 
         T length() const {
-            static_assert(std::is_floating_point<T>::value, "length() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "length() only available for float/double types");
             return std::sqrt(dot(*this));
         }
 
@@ -135,13 +130,13 @@ namespace plutom{
         }
 
         vec3 normalize() const {
-            static_assert(std::is_floating_point<T>::value, "normalize() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "normalize() only available for float/double types");
             T len = length();
             return len == T(0) ? *this : *this / len;
         }
 
         T distance(const vec3& other) const{
-            static_assert(std::is_floating_point<T>::value, "distance() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "distance() only available for float/double types");
             return std::sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y) + (z - other.z)*(z - other.z));
         }
 
@@ -211,7 +206,7 @@ namespace plutom{
 
     template<typename T>
     T angle_between(const vec3<T>& a, const vec3<T>& b) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         T zero_check = a.length() * b.length();
         if (zero_check == T(0))
             throw std::domain_error("Cannot compute angle between zero-length vectors");
@@ -240,14 +235,14 @@ namespace plutom{
 
     template<typename T>
     constexpr vec3<T> reflect(const vec3<T>& v, const vec3<T>& n) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         vec3<T> n_norm = n.normalize();
         return v - T(2) * v.dot(n_norm) * n_norm;
     }
 
     template<typename T>
     constexpr vec3<T> refract(const vec3<T>& v, const vec3<T>& n, T eta) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         vec3<T> n_norm = n.normalize();
         T cosI = -n_norm.dot(v);
         T sinT2 = eta * eta * (T(1) - cosI * cosI);

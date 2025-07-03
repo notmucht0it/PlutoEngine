@@ -1,7 +1,6 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <math.h>
 
 #include "PlutoMath/transform.hpp"
 #include "util/shader.hpp"
@@ -11,7 +10,7 @@
 
 #include "PlutoMath/plutomath.hpp"
 
-const GLuint WIDTH = 800, HEIGHT = 600;
+constexpr GLuint WIDTH = 800, HEIGHT = 600;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -26,8 +25,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+    if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -51,7 +50,7 @@ int main()
 
     Shader ourShader("shaders/shader.vs","shaders/shader.fs");
 
-    float vertices[] = {
+    constexpr float vertices[] = {
         // positions          // colors           // texture coords
          0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
          0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
@@ -59,7 +58,7 @@ int main()
         -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f  // top left 
     };
 
-    unsigned int indices[] = {  // note that we start from 0!
+    const unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };  
@@ -76,13 +75,13 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), static_cast<void*>(nullptr));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER,0);
@@ -141,7 +140,7 @@ int main()
 
         ourShader.setFloat("visible",percent);
 
-        plutom::mat4f trans = plutom::transform3D::rotateZ((float)glfwGetTime());
+        plutom::mat4f trans = plutom::transform3D::rotateZ(static_cast<float>(glfwGetTime()));
         trans = plutom::transform3D::translate(trans,plutom::vec3(0.5f,-0.5f,0.0f));
         
         ourShader.setmat4f("transform", trans);
@@ -153,12 +152,12 @@ int main()
         ourShader.use();
         glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         trans = plutom::transform3D::translate(plutom::vec3(-0.5f,0.5f,0.0f));
-        trans = plutom::transform3D::scale(trans,std::sin((float)glfwGetTime()));
+        trans = plutom::transform3D::scale(trans,std::sin(static_cast<float>(glfwGetTime())));
         ourShader.setmat4f("transform", trans);
         ourShader.use();
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         
 
         glfwSwapBuffers(window);
@@ -171,11 +170,11 @@ int main()
     return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+void framebuffer_size_callback(GLFWwindow* window, const int width, const int height){
     glViewport(0, 0, width, height);
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+void key_callback(GLFWwindow* window, const int key, int scancode, const int action, int mode) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
     if (key == GLFW_KEY_UP && action == GLFW_PRESS && percent <= 0.9f)

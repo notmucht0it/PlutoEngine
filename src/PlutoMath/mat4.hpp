@@ -14,7 +14,7 @@ namespace plutom{
 
         constexpr mat4() : columns{ vec4<T>{T(0), T(0), T(0), T(0)}, vec4<T>{T(0), T(0), T(0), T(0)},
                                     vec4<T>{T(0), T(0), T(0), T(0)}, vec4<T>{T(0), T(0), T(0), T(0)}} {}
-        constexpr mat4(T s) : columns{  vec4<T>{s, T(0), T(0), T(0)}, vec4<T>{T(0), s, T(0), T(0)},
+        constexpr explicit mat4(T s) : columns{  vec4<T>{s, T(0), T(0), T(0)}, vec4<T>{T(0), s, T(0), T(0)},
                                         vec4<T>{T(0), T(0), s, T(0)}, vec4<T>{T(0), T(0), T(0), s}} {}
         constexpr   mat4(const vec4<T>& col0, const vec4<T>& col1, const vec4<T>& col2, const vec4<T>& col3) :
                     columns{col0, col1, col2, col3} {}
@@ -139,7 +139,7 @@ namespace plutom{
             };
         }
 
-        constexpr mat3<T> minor(std::size_t row, std::size_t col){
+        constexpr mat3<T> minor(const std::size_t row, const std::size_t col){
             if(row >= 4 || col >= 4) throw std::out_of_range("Index out of bounds for 4 by 4 matrix");
 
             mat3<T> result;

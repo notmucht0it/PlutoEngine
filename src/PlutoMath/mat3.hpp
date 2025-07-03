@@ -13,7 +13,7 @@ namespace plutom{
 
         constexpr mat3() : columns{ vec3<T>{T(0), T(0), T(0)}, vec3<T>{T(0), T(0), T(0)},
                                     vec3<T>{T(0), T(0), T(0)}} {}
-        constexpr mat3(T s) : columns{  vec3<T>{s, T(0), T(0)}, vec3<T>{T(0), s, T(0)},
+        constexpr explicit mat3(T s) : columns{  vec3<T>{s, T(0), T(0)}, vec3<T>{T(0), s, T(0)},
                                         vec3<T>{T(0), T(0), s}} {}
         constexpr mat3(const vec3<T>& col0, const vec3<T>& col1, const vec3<T>& col2) : columns{col0, col1, col2} {}
         constexpr   mat3(T s1,T s2,T s3,T s4,T s5,T s6,T s7,T s8,T s9) : 
@@ -123,7 +123,7 @@ namespace plutom{
             };
         }
 
-        constexpr mat2<T> minor(std::size_t row, std::size_t col){
+        constexpr mat2<T> minor(const std::size_t row, const std::size_t col){
             if(row >= 3 || col >= 3) throw std::out_of_range("Index out of bounds for 3 by 3 matrix");
 
             mat2<T> result;

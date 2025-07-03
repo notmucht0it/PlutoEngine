@@ -14,20 +14,20 @@ namespace plutom{
         T x, y, z, w;
 
         constexpr vec4() : x(T(0)), y(T(0)), z(T(0)), w(T(0)) {}
-        constexpr vec4(T val) : x(val), y(val), z(val), w(val) {}
+        constexpr explicit vec4(T val) : x(val), y(val), z(val), w(val) {}
         constexpr vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
         template<typename U>
-        constexpr vec4(const vec4<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)),
+        constexpr explicit vec4(const vec4<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)),
                                                         z(static_cast<T>(other.z)), w(static_cast<T>(other.w)) {}
 
-        T& operator[](std::size_t i) {
+        T& operator[](const std::size_t i) {
             if (i == 0) return x;
             if (i == 1) return y;
             if (i == 2) return z;
             if (i == 3) return w;
             throw std::out_of_range("vec4 index must be 0, 1, 2, or 3");
         }
-        const T& operator[](std::size_t i) const {
+        const T& operator[](const std::size_t i) const {
             if (i == 0) return x;
             if (i == 1) return y;
             if (i == 2) return z;
@@ -36,13 +36,7 @@ namespace plutom{
         }
 
         // Assignment from same type
-        constexpr vec4<T>& operator=(const vec4<T>& other) {
-            x = other.x;
-            y = other.y;
-            z = other.z;
-            w = other.w;
-            return *this;
-        }
+        constexpr vec4<T>& operator=(const vec4<T>& other) = default;
 
         // Assignment from different type
         template<typename U>
@@ -133,7 +127,7 @@ namespace plutom{
         }
 
         T length() const {
-            static_assert(std::is_floating_point<T>::value, "length() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "length() only available for float/double types");
             return std::sqrt(dot(*this));
         }
 
@@ -146,13 +140,13 @@ namespace plutom{
         }
 
         vec4 normalize() const {
-            static_assert(std::is_floating_point<T>::value, "normalize() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "normalize() only available for float/double types");
             T len = length();
             return len == T(0) ? *this : *this / len;
         }
 
         T distance(const vec4& other) const{
-            static_assert(std::is_floating_point<T>::value, "distance() only available for float/double types");
+            static_assert(std::is_floating_point_v<T>, "distance() only available for float/double types");
             return std::sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y) + (z - other.z)*(z - other.z) + (w - other.w)*(w - other.w));
         }
 
@@ -222,7 +216,7 @@ namespace plutom{
 
     template<typename T>
     T angle_between(const vec4<T>& a, const vec4<T>& b) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         T zero_check = a.length() * b.length();
         if (zero_check == T(0))
             throw std::domain_error("Cannot compute angle between zero-length vectors");
@@ -249,14 +243,14 @@ namespace plutom{
 
     template<typename T>
     constexpr vec4<T> reflect(const vec4<T>& v, const vec4<T>& n) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         vec4<T> n_norm = n.normalize();
         return v - T(2) * v.dot(n_norm) * n_norm;
     }
 
     template<typename T>
     constexpr vec4<T> refract(const vec4<T>& v, const vec4<T>& n, T eta) {
-        static_assert(std::is_floating_point<T>::value, "Requires floating-point type");
+        static_assert(std::is_floating_point_v<T>, "Requires floating-point type");
         vec4<T> n_norm = n.normalize();
         T cosI = -n_norm.dot(v);
         T sinT2 = eta * eta * (T(1) - cosI * cosI);
