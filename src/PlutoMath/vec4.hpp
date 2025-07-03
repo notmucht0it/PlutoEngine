@@ -138,8 +138,7 @@ namespace plutom{
         }
 
         T norm() const{
-            static_assert(std::is_floating_point<T>::value, "distance() only available for float/double types");
-            return std::sqrt(x*x + y*y + z*z + w*w);
+            return length();
         }
 
         constexpr T distance_squared(const vec4& other) const{

@@ -121,8 +121,7 @@ namespace plutom{
         }
 
         T norm() const{
-            static_assert(std::is_floating_point<T>::value, "distance() only available for float/double types");
-            return std::sqrt(x*x + y*y);
+            return length();
         }
 
 
@@ -141,8 +140,6 @@ namespace plutom{
         T cross(const vec2& other) const{
             return x * other.y - y*other.x;
         }
-
-
 
             // Stream output
         friend std::ostream& operator<<(std::ostream& os, const vec2& v) {
