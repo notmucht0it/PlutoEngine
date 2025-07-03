@@ -36,7 +36,7 @@ public:
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
-        catch(std::ifstream::failure e){
+        catch([[maybe_unused]] std::ifstream::failure &e){
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
         }
 
@@ -50,23 +50,23 @@ public:
         
         // vertex Shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertex, 1, &vShaderCode, NULL);
+        glShaderSource(vertex, 1, &vShaderCode, nullptr);
         glCompileShader(vertex);
         // print compile errors if any
         glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
         if(!success){
-            glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+            glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
             std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
         };
 
         //fragment shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragment, 1, &fShaderCode, NULL);
+        glShaderSource(fragment, 1, &fShaderCode, nullptr);
         glCompileShader(fragment);
         // print compile errors if any
         glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
         if(!success){
-            glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+            glGetShaderInfoLog(fragment, 512, nullptr, infoLog);
             std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
         };
 
@@ -78,7 +78,7 @@ public:
         glGetProgramiv(ID, GL_LINK_STATUS, &success);
         if(!success)
         {
-            glGetProgramInfoLog(ID, 512, NULL, infoLog);
+            glGetProgramInfoLog(ID, 512, nullptr, infoLog);
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
         }
         
@@ -88,23 +88,23 @@ public:
 
     }
 
-    void use(){
+    void use() const{
         glUseProgram(ID);
     }
 
-    void setBool(const std::string &name, bool value) const{
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+    void setBool(const std::string &name, const bool value) const{
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
     }
 
-    void setInt(const std::string &name, int value) const{
+    void setInt(const std::string &name, const int value) const{
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setFloat(const std::string &name, float value) const{
+    void setFloat(const std::string &name, const float value) const{
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setmat4f(const std::string &name, plutom::mat4f value) const{
+    void setMat4f(const std::string &name, plutom::mat4f value) const{
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, plutom::value_ptr(value));
     }
 };

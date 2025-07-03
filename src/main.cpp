@@ -143,7 +143,7 @@ int main()
         plutom::mat4f trans = plutom::transform3D::rotateZ(static_cast<float>(glfwGetTime()));
         trans = plutom::transform3D::translate(trans,plutom::vec3(0.5f,-0.5f,0.0f));
         
-        ourShader.setmat4f("transform", trans);
+        ourShader.setMat4f("transform", trans);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -155,7 +155,7 @@ int main()
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         trans = plutom::transform3D::translate(plutom::vec3(-0.5f,0.5f,0.0f));
         trans = plutom::transform3D::scale(trans,std::sin(static_cast<float>(glfwGetTime())));
-        ourShader.setmat4f("transform", trans);
+        ourShader.setMat4f("transform", trans);
         ourShader.use();
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         
