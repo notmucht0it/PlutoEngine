@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <ostream>
 #include <stdexcept>
 #include "vec2.hpp"
@@ -8,26 +9,26 @@ namespace plutom{
 
     template<typename T>
     struct mat2{
-        plutom::vec2<T> columns[2];
+        vec2<T> columns[2];
 
-        constexpr mat2() : columns{plutom::vec2<T>{T(0), T(0)}, plutom::vec2<T>{T(0), T(0)}} {}
-        constexpr mat2(T s) : columns{plutom::vec2<T>{s, T(0)}, plutom::vec2<T>{T(0), s}} {}
-        constexpr mat2(const plutom::vec2<T>& col0, const plutom::vec2<T>& col1) : columns{col0, col1} {}
-        constexpr mat2(T s1,T s2,T s3,T s4) : columns{plutom::vec2<T>{s1, s3}, plutom::vec2<T>{s2, s4}} {}
+        constexpr mat2() : columns{vec2<T>{T(0), T(0)}, vec2<T>{T(0), T(0)}} {}
+        constexpr mat2(T s) : columns{vec2<T>{s, T(0)}, vec2<T>{T(0), s}} {}
+        constexpr mat2(const vec2<T>& col0, const vec2<T>& col1) : columns{col0, col1} {}
+        constexpr mat2(T s1,T s2,T s3,T s4) : columns{vec2<T>{s1, s3}, vec2<T>{s2, s4}} {}
 
         template<typename U>
         constexpr explicit operator mat2<U>() const {
             return mat2<U>{
-                static_cast<plutom::vec2<U>>(columns[0]),
-                static_cast<plutom::vec2<U>>(columns[1])
+                static_cast<vec2<U>>(columns[0]),
+                static_cast<vec2<U>>(columns[1])
             };
         }
         
-        constexpr plutom::vec2<T>& operator[](std::size_t i) {
+        constexpr vec2<T>& operator[](std::size_t i) {
             if(i >= 2) throw std::out_of_range("Index must be 0 or 1");
             return columns[i];
         }
-        constexpr const plutom::vec2<T>& operator[](std::size_t i) const {
+        constexpr const vec2<T>& operator[](std::size_t i) const {
             if(i >= 2) throw std::out_of_range("Index must be 0 or 1");
             return columns[i];
         }
@@ -59,7 +60,7 @@ namespace plutom{
             return {-columns[0], -columns[1]};
         }
 
-        constexpr plutom::vec2<T> operator*(const plutom::vec2<T>& v) const{
+        constexpr vec2<T> operator*(const vec2<T>& v) const{
             return {columns[0][0] * v.x + columns[1][0] * v.y, columns[0][1] * v.x + columns[1][1] * v.y};
         }
 
@@ -84,15 +85,15 @@ namespace plutom{
             T C11 = M1 - M2 + M3 + M6;
 
             return mat2{
-                plutom::vec2<T>{C00, C10},
-                plutom::vec2<T>{C01, C11}
+                vec2<T>{C00, C10},
+                vec2<T>{C01, C11}
             };
         }
 
         constexpr mat2 transpose() const{
             return {
-                plutom::vec2<T>{columns[0].x, columns[1].x},
-                plutom::vec2<T>{columns[0].y, columns[1].y}
+                vec2<T>{columns[0].x, columns[1].x},
+                vec2<T>{columns[0].y, columns[1].y}
             };
         }
 
@@ -100,10 +101,48 @@ namespace plutom{
             return columns[0].x * columns[1].y - columns[1].x * columns[0].y;
         }
 
+        constexpr T minor(std::size_t row, std::size_t col){
+            if(row >= 2 || col >= 2) throw std::out_of_range("Index out of bounds for 2 by 2 matrix");
+
+            T result;
+
+            std::size_t r = 0;
+            for(std::size_t i = 0; i < 2; ++i){
+                std::size_t c = 0;
+                if(i == row) continue;
+                for(std::size_t j = 0; j < 2; ++j){
+                    if(j == col) continue;
+                    //result[c][r] = columns[j][i]; 
+                    return columns[j][i];
+                    ++c;
+                }
+                ++r;
+            }
+        }
+
+        constexpr mat2 cofactor() const{
+            mat2 output;
+            for(std::size_t i = 0; i < 2; ++i){
+                for(std::size_t j = 0; j < 2; ++j){
+                    T mul = 1;
+                    if((i+j)%2 == 1){
+                        mul *= -1;
+                    }
+                    output[j][i] = mul * minor(i,j);
+                }
+            }
+
+            return output;
+        }
+
+        constexpr mat2 adjugate() const{
+            return cofactor().transpose();
+        }
+
         constexpr mat2 inverse() const{
             T det = determinant();
             if(det == T(0)) throw std::domain_error("Determinant of matrix must be non zero to calculate inverse");
-            return mat2{columns[1].y, -columns[1].x, -columns[0].y, columns[0].x} / det;
+            return adjugate() / det;
         }
 
         constexpr bool operator==(const mat2& other) const{
@@ -143,11 +182,11 @@ namespace plutom{
             return mat2(T(1));
         }
 
-        constexpr plutom::vec2<T> col(std::size_t i) const {
+        constexpr vec2<T> col(std::size_t i) const {
             return (*this)[i]; // same as operator[]
         }
 
-        constexpr plutom::vec2<T> row(std::size_t i) const {
+        constexpr vec2<T> row(std::size_t i) const {
             if(i >= 2) throw std::out_of_range("Row index must be 0 or 1");
             return {columns[0][i], columns[1][i]};
         }
@@ -155,19 +194,8 @@ namespace plutom{
     };
 
     template<typename T>
-    constexpr plutom::vec2<T> operator*(const plutom::vec2<T>& v, const plutom::mat2<T>& m) {
-        return {
-            v.x * m[0][0] + v.y * m[0][1],
-            v.x * m[1][0] + v.y * m[1][1]
-        };
-    }
-
-    template<typename T>
     constexpr mat2<T> operator*(T scalar, const mat2<T>& m) {
-        return {
-            scalar * m[0][0], scalar * m[1][0],
-            scalar * m[0][1], scalar * m[1][1]
-        };
+        return m * scalar;
     }
 
     using mat2f = mat2<float>;

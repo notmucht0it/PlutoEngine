@@ -26,4 +26,9 @@ namespace plutom{
         return std::abs(a - b) <= eps * std::max(T(1), std::max(std::abs(a), std::abs(b)));
     }
 
+    template<typename T>
+    constexpr T determinant(const T& a){
+        return a;
+    }
+
 }
