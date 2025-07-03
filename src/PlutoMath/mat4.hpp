@@ -73,10 +73,7 @@ namespace plutom{
         }
 
         constexpr vec4<T> operator*(const vec4<T>& v) const{
-            return {columns[0][0] * v.x + columns[1][0] * v.y + columns[2][0] * v.z + columns[3][0] * v.w,
-                    columns[0][1] * v.x + columns[1][1] * v.y + columns[2][1] * v.z + columns[3][1] * v.w,
-                    columns[0][2] * v.x + columns[1][2] * v.y + columns[2][2] * v.z + columns[3][2] * v.w,
-                    columns[0][3] * v.x + columns[1][3] * v.y + columns[2][3] * v.z + columns[3][3] * v.w};
+            return columns[0] * v.x + columns[1] * v.y + columns[2] * v.z + columns[3] * v.w;
         }
 
         constexpr mat4 operator*(const mat4& other) const {
