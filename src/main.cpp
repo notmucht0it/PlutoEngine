@@ -3,10 +3,13 @@
 #include <iostream>
 #include <math.h>
 
+#include "PlutoMath/transform.hpp"
 #include "util/shader.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+
+#include "PlutoMath/plutomath.hpp"
 
 const GLuint WIDTH = 800, HEIGHT = 600;
 
@@ -122,6 +125,9 @@ int main()
     ourShader.use();
     ourShader.setInt("texture2", 1);
 
+    //std::cout << trans << std::endl;
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
     while(!glfwWindowShouldClose(window)){
         // Runs through possible events, key press, resizing, etc.
         glfwPollEvents(); 
@@ -135,6 +141,11 @@ int main()
         //ourShader.setFloat("horizontalOffset",posValue);
 
         ourShader.setFloat("visible",percent);
+
+        plutom::mat4f trans = plutom::transform3D::rotateZ((float)glfwGetTime());
+        trans = plutom::transform3D::translate(trans,plutom::vec3(0.5f,-0.5f,0.0f));
+        
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, plutom::value_ptr(trans));
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -144,6 +155,12 @@ int main()
         glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+        trans = plutom::transform3D::translate(plutom::vec3(-0.5f,0.5f,0.0f));
+        trans = plutom::transform3D::scale(trans,std::sin((float)glfwGetTime()));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, plutom::value_ptr(trans));
+        ourShader.use();
+        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+        
 
         glfwSwapBuffers(window);
     }

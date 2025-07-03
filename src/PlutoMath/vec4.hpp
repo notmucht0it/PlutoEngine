@@ -14,10 +14,10 @@ namespace plutom{
         T x, y, z, w;
 
         constexpr vec4() : x(T(0)), y(T(0)), z(T(0)), w(T(0)) {}
-        explicit constexpr vec4(T val) : x(val), y(val), z(val), w(val) {}
-        explicit  constexpr vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+        constexpr vec4(T val) : x(val), y(val), z(val), w(val) {}
+        constexpr vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
         template<typename U>
-        explicit constexpr vec4(const vec4<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)),
+        constexpr vec4(const vec4<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)),
                                                         z(static_cast<T>(other.z)), w(static_cast<T>(other.w)) {}
 
         T& operator[](std::size_t i) {
@@ -33,6 +33,25 @@ namespace plutom{
             if (i == 2) return z;
             if (i == 3) return w;
             throw std::out_of_range("vec4 index must be 0, 1, 2, or 3");
+        }
+
+        // Assignment from same type
+        constexpr vec4<T>& operator=(const vec4<T>& other) {
+            x = other.x;
+            y = other.y;
+            z = other.z;
+            w = other.w;
+            return *this;
+        }
+
+        // Assignment from different type
+        template<typename U>
+        constexpr vec4<T>& operator=(const vec4<U>& other) {
+            x = static_cast<T>(other.x);
+            y = static_cast<T>(other.y);
+            z = static_cast<T>(other.z);
+            w = static_cast<T>(other.w);
+            return *this;
         }
 
         constexpr vec4 operator+(const vec4& other) const{
@@ -165,6 +184,16 @@ namespace plutom{
         }
 
     };
+
+    template<typename T>
+    constexpr const T* value_ptr(const vec4<T>& v) {
+        return &v.x;
+    }
+
+    template<typename T>
+    constexpr T* value_ptr(vec4<T>& v) {
+        return &v.x;
+    }
 
     template<typename T>
     constexpr vec4<T> operator*(T scalar, const vec4<T>& v) {

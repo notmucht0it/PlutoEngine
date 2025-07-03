@@ -14,10 +14,10 @@ namespace plutom{
         T x, y, z;
 
         constexpr vec3() : x(T(0)), y(T(0)), z(T(0)) {}
-        explicit constexpr vec3(T val) : x(val), y(val), z(val) {}
-        explicit  constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
+        constexpr vec3(T val) : x(val), y(val), z(val) {}
+        constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
         template<typename U>
-        explicit constexpr vec3(const vec3<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)), z(static_cast<T>(other.z)) {}
+        constexpr vec3(const vec3<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)), z(static_cast<T>(other.z)) {}
 
         T& operator[](std::size_t i) {
             if (i == 0) return x;
@@ -30,6 +30,23 @@ namespace plutom{
             if (i == 1) return y;
             if (i == 2) return z;
             throw std::out_of_range("vec3 index must be 0, 1, or 2");
+        }
+
+        // Assignment from same type
+        constexpr vec3<T>& operator=(const vec3<T>& other) {
+            x = other.x;
+            y = other.y;
+            z = other.z;
+            return *this;
+        }
+
+        // Assignment from different type
+        template<typename U>
+        constexpr vec3<T>& operator=(const vec3<U>& other) {
+            x = static_cast<T>(other.x);
+            y = static_cast<T>(other.y);
+            z = static_cast<T>(other.z);
+            return *this;
         }
 
         constexpr vec3 operator+(const vec3& other) const{
@@ -157,6 +174,16 @@ namespace plutom{
         }
 
     };
+
+    template<typename T>
+    constexpr const T* value_ptr(const vec3<T>& v) {
+        return &v.x;
+    }
+
+    template<typename T>
+    constexpr T* value_ptr(vec3<T>& v) {
+        return &v.x;
+    }
 
     template<typename T>
     constexpr vec3<T> operator*(T scalar, const vec3<T>& v) {

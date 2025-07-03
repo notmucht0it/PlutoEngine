@@ -1,9 +1,4 @@
 === PlutoMath Vector & Matrix Operations Checklist ===
-
-3. Transform Matrices (mat4<T>)
--------------------------------
-[ ] Combine transforms (M = T * R * S)
-
 4. Projection & View Matrices
 -----------------------------
 [ ] Perspective matrix
@@ -11,16 +6,10 @@
 [ ] Frustum matrix
 [ ] LookAt camera matrix
 
-5. Vector Utility Functions
----------------------------
-[ ] Project (project(v, onto))
-
 6. Optional / Advanced
 ----------------------
 [ ] Conversion between vec2, vec3, vec4
 [ ] Quaternion support
-[ ] Gram-Schmidt orthonormalization
-[ ] Orthonormal basis generation
 [ ] Polar ↔ Cartesian conversion
 [ ] Matrix decomposition (QR, SVD)
 

@@ -14,10 +14,10 @@ namespace plutom{
         T x, y;
 
         constexpr vec2() : x(T(0)), y(T(0)) {}
-        explicit constexpr vec2(T val) : x(val), y(val) {}
-        explicit  constexpr vec2(T x, T y) : x(x), y(y) {}
+        constexpr vec2(T val) : x(val), y(val) {}
+        constexpr vec2(T x, T y) : x(x), y(y) {}
         template<typename U>
-        explicit constexpr vec2(const vec2<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) {}
+        constexpr vec2(const vec2<U>& other) : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) {}
 
         T& operator[](std::size_t i) {
             if (i == 0) return x;
@@ -28,6 +28,21 @@ namespace plutom{
             if (i == 0) return x;
             if (i == 1) return y;
             throw std::out_of_range("vec2 index must be 0 or 1");
+        }
+
+        // Assignment from same type
+        constexpr vec2<T>& operator=(const vec2<T>& other) {
+            x = other.x;
+            y = other.y;
+            return *this;
+        }
+
+        // Assignment from different type
+        template<typename U>
+        constexpr vec2<T>& operator=(const vec2<U>& other) {
+            x = static_cast<T>(other.x);
+            y = static_cast<T>(other.y);
+            return *this;
         }
 
         constexpr vec2 operator+(const vec2& other) const{
@@ -147,6 +162,16 @@ namespace plutom{
         }
 
     };
+
+    template<typename T>
+    constexpr const T* value_ptr(const vec2<T>& v) {
+        return &v.x;
+    }
+
+    template<typename T>
+    constexpr T* value_ptr(vec2<T>& v) {
+        return &v.x;
+    }
 
     template<typename T>
     constexpr vec2<T> operator*(T scalar, const vec2<T>& v) {

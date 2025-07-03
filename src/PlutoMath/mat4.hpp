@@ -261,6 +261,16 @@ namespace plutom{
     };
 
     template<typename T>
+    constexpr const T* value_ptr(const mat4<T>& m) {
+        return &m.columns[0].x;
+    }
+
+    template<typename T>
+    constexpr T* value_ptr(mat4<T>& m) {
+        return &m.columns[0].x;
+    }
+
+    template<typename T>
     constexpr mat4<T> operator*(T scalar, const mat4<T>& m) {
         return m * scalar;
     }
