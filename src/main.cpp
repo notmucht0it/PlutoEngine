@@ -126,7 +126,6 @@ int main()
     ourShader.setInt("texture2", 1);
 
     //std::cout << trans << std::endl;
-    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
 
     while(!glfwWindowShouldClose(window)){
         // Runs through possible events, key press, resizing, etc.
@@ -145,7 +144,7 @@ int main()
         plutom::mat4f trans = plutom::transform3D::rotateZ((float)glfwGetTime());
         trans = plutom::transform3D::translate(trans,plutom::vec3(0.5f,-0.5f,0.0f));
         
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, plutom::value_ptr(trans));
+        ourShader.setmat4f("transform", trans);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -157,7 +156,7 @@ int main()
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
         trans = plutom::transform3D::translate(plutom::vec3(-0.5f,0.5f,0.0f));
         trans = plutom::transform3D::scale(trans,std::sin((float)glfwGetTime()));
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, plutom::value_ptr(trans));
+        ourShader.setmat4f("transform", trans);
         ourShader.use();
         glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
         
