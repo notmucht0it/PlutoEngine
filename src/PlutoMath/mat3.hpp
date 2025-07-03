@@ -40,7 +40,7 @@ namespace plutom{
         friend std::ostream& operator<<(std::ostream& os, const mat3& m) {
             os << "[[" << m.columns[0].x << ", " << m.columns[1].x << ", " << m.columns[2].x << "],\n"
                << " [" << m.columns[0].y << ", " << m.columns[1].y << ", " << m.columns[2].y << "],\n"
-               << " [" << m.columns[0].z << ", " << m.columns[1].z << ", " << m.columns[2].z <<"]\n";
+               << " [" << m.columns[0].z << ", " << m.columns[1].z << ", " << m.columns[2].z <<"]]\n";
             return os;
         }
 
@@ -124,7 +124,7 @@ namespace plutom{
         }
 
         constexpr mat2<T> minor(std::size_t row, std::size_t col){
-            if(row >= 3 || col >= 3) throw std::out_of_range("Index out of bounds for 2 by 2 matrix");
+            if(row >= 3 || col >= 3) throw std::out_of_range("Index out of bounds for 3 by 3 matrix");
 
             mat2<T> result;
 
