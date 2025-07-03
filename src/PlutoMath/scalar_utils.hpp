@@ -31,4 +31,14 @@ namespace plutom{
         return a;
     }
 
+    template<typename T>
+    constexpr T radians(T degrees) {
+        return degrees * static_cast<T>(M_PI / 180.0);
+    }
+
+    template<typename T>
+    constexpr T degrees(T radians) {
+        return radians * static_cast<T>(180.0 / M_PI);
+    }
+
 }

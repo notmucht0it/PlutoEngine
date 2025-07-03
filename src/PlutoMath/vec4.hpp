@@ -76,6 +76,22 @@ namespace plutom{
             return *this;
         }
 
+        constexpr vec4& operator+=(T scalar){
+            x += scalar;
+            y += scalar;
+            z += scalar;
+            w += scalar;
+            return *this;
+        }
+
+        constexpr vec4& operator-=(T scalar){
+            x -= scalar;
+            y -= scalar;
+            z -= scalar;
+            w -= scalar;
+            return *this;
+        }
+
         constexpr vec4& operator*=(T scalar){
             x *= scalar;
             y *= scalar;
