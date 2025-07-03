@@ -47,6 +47,7 @@ namespace plutom{
         }
 
         constexpr vec2 operator/(T scalar) const{
+            if(scalar == T(0)) throw std::domain_error("Cannot divide by zero");
             return {x/scalar, y/scalar};
         }
 
@@ -73,6 +74,7 @@ namespace plutom{
         }
 
         constexpr vec2& operator/=(T scalar){
+            if(scalar == T(0)) throw std::domain_error("Cannot divide by zero");
             x /= scalar;
             y /= scalar;
             return *this;
@@ -111,11 +113,11 @@ namespace plutom{
         }
 
         constexpr bool operator==(const vec2& other) const{
-            return (x == other.x) && (y == other.y);
+            return  almostequal(x,other.x) && almostequal(y,other.y);
         }
 
         constexpr bool operator!=(const vec2& other) const{
-            return (x != other.x) || (y != other.y);
+            return  !almostequal(x,other.x) || !almostequal(y,other.y);
         }
 
         T cross(const vec2& other) const{
@@ -138,7 +140,7 @@ namespace plutom{
 
     template<typename T>
     constexpr vec2<T> clamp(const vec2<T>& v, const vec2<T>& min, const vec2<T>& max){
-            return {plutom::clamp_scalar(v.x, min.x, max.x), plutom::clamp_scalar(v.y,min.y, max.y)};
+            return {clamp_scalar(v.x, min.x, max.x), clamp_scalar(v.y,min.y, max.y)};
         }
 
     template<typename T>
@@ -167,12 +169,12 @@ namespace plutom{
 
     template<typename T>
     constexpr vec2<T> step(const vec2<T>& edge, const vec2<T>& x) {
-        return {plutom::step_scalar(edge.x, x.x),plutom::step_scalar(edge.y, x.y)};
+        return {step_scalar(edge.x, x.x),step_scalar(edge.y, x.y)};
     }
 
     template<typename T>
     constexpr vec2<T> smoothstep(const vec2<T>& edge, const vec2<T>& x) {
-        return {plutom::smoothstep_scalar(edge.x, x.x),plutom::smoothstep_scalar(edge.y, x.y)};
+        return {smoothstep_scalar(edge.x, x.x),smoothstep_scalar(edge.y, x.y)};
     }
 
     template<typename T>

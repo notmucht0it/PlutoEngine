@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "util/shader.hpp"
-#include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>

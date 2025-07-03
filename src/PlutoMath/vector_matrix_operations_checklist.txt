@@ -1,36 +1,5 @@
 === PlutoMath Vector & Matrix Operations Checklist ===
 
-1. Core Vector Operations (vec2<T>, vec3<T>, vec4<T>)
-----------------------------------------------------
-[ ] Constructor, copy/move, and assignment
-[ ] Element access (x, y, z, w) or array subscript
-[ ] Vector addition (v + w)
-[ ] Vector subtraction (v - w)
-[ ] Scalar multiplication (v * s, s * v)
-[ ] Scalar division (v / s)
-[ ] Unary minus (-v)
-[ ] Dot product (dot(v, w))
-[ ] Cross product (cross(v, w)) [only for vec3]
-[ ] Length / Magnitude (length(v))
-[ ] Squared length (length_squared(v))
-[ ] Normalize (normalize(v))
-[ ] Distance between vectors (distance(v, w))
-[ ] Equality / near-equality comparison
-
-2. Matrix Operations (mat2<T>, mat3<T>, mat4<T>)
-------------------------------------------------
-[ ] Constructor + identity matrix
-[ ] Matrix addition (A + B)
-[ ] Matrix subtraction (A - B)
-[ ] Matrix-scalar multiplication (A * s)
-[ ] Matrix-matrix multiplication (A * B)
-[ ] Matrix-vector multiplication (A * v)
-[ ] Transpose (transpose(A))
-[ ] Determinant (determinant(A)) [start with mat2/mat3]
-[ ] Inverse (inverse(A)) [start with mat2]
-[ ] Identity check
-[ ] Zero matrix
-
 3. Transform Matrices (mat4<T>)
 -------------------------------
 [ ] Translation matrix (translate(vec3))
@@ -47,19 +16,10 @@
 
 5. Vector Utility Functions
 ---------------------------
-[ ] Clamp (clamp(v, min, max))
-[ ] Mix / Lerp (mix(a, b, t))
-[ ] Reflect (reflect(I, N))
-[ ] Refract (refract(I, N, eta))
 [ ] Project (project(v, onto))
-[ ] Angle between vectors
-[ ] Step / Smoothstep
-[ ] Faceforward
 
 6. Optional / Advanced
 ----------------------
-[ ] Component-wise (Hadamard) product
-[ ] Swizzle (e.g., vec.xy())
 [ ] Conversion between vec2, vec3, vec4
 [ ] Quaternion support
 [ ] Gram-Schmidt orthonormalization
@@ -69,9 +29,5 @@
 
 Design Enhancements
 -------------------
-[ ] Type aliases (vec3f, vec3d, vec3i)
-[ ] Namespace protection (namespace pmath)
-[ ] Templated types (template<typename T>)
-[ ] constexpr and inline where applicable
 [ ] Unit tests or debug asserts
 [ ] I/O stream operators (<<)

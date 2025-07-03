@@ -52,6 +52,7 @@ namespace plutom{
         }
 
         constexpr vec4 operator/(T scalar) const{
+            if(scalar == T(0)) throw std::domain_error("Cannot divide by zero");
             return {x/scalar, y/scalar, z/scalar, w/scalar};
         }
 
@@ -84,6 +85,7 @@ namespace plutom{
         }
 
         constexpr vec4& operator/=(T scalar){
+            if(scalar == T(0)) throw std::domain_error("Cannot divide by zero");
             x /= scalar;
             y /= scalar;
             z /= scalar;
@@ -124,11 +126,13 @@ namespace plutom{
         }
 
         constexpr bool operator==(const vec4& other) const{
-            return (x == other.x) && (y == other.y) && (z == other.z) && (w == other.w);
+            return  almostequal(x,other.x) && almostequal(y,other.y) && 
+                    almostequal(z,other.z) && almostequal(w,other.w);
         }
 
         constexpr bool operator!=(const vec4& other) const{
-            return (x != other.x) || (y != other.y) || (z != other.z) || (w != other.w);
+            return  !almostequal(x,other.x) || !almostequal(y,other.y) || 
+                    !almostequal(z,other.z) || !almostequal(w,other.w);
         }
 
         //constexpr vec4 cross(const vec4& other) const{
@@ -149,8 +153,8 @@ namespace plutom{
 
     template<typename T>
     constexpr vec4<T> clamp(const vec4<T>& v, const vec4<T>& min, const vec4<T>& max){
-            return {plutom::clamp_scalar(v.x, min.x, max.x), plutom::clamp_scalar(v.y,min.y, max.y), 
-                    plutom::clamp_scalar(v.z,min.z, max.z), plutom::clamp_scalar(v.w,min.w, max.w)};
+            return {clamp_scalar(v.x, min.x, max.x),clamp_scalar(v.y,min.y, max.y), 
+                    clamp_scalar(v.z,min.z, max.z),clamp_scalar(v.w,min.w, max.w)};
         }
 
     template<typename T>
@@ -179,14 +183,14 @@ namespace plutom{
 
     template<typename T>
     constexpr vec4<T> step(const vec4<T>& edge, const vec4<T>& x) {
-        return {plutom::step_scalar(edge.x, x.x),plutom::step_scalar(edge.y, x.y),
-                plutom::step_scalar(edge.z, x.z),plutom::step_scalar(edge.w, x.w)};
+        return {step_scalar(edge.x, x.x),step_scalar(edge.y, x.y),
+                step_scalar(edge.z, x.z),step_scalar(edge.w, x.w)};
     }
 
     template<typename T>
     constexpr vec4<T> smoothstep(const vec4<T>& edge, const vec4<T>& x) {
-        return {plutom::smoothstep_scalar(edge.x, x.x),plutom::smoothstep_scalar(edge.y, x.y),
-                plutom::smoothstep_scalar(edge.z, x.z),plutom::smoothstep_scalar(edge.w, x.w)};
+        return {smoothstep_scalar(edge.x, x.x),smoothstep_scalar(edge.y, x.y),
+                smoothstep_scalar(edge.z, x.z),smoothstep_scalar(edge.w, x.w)};
     }
 
     template<typename T>

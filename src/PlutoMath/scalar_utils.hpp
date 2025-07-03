@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdlib>
+#include <cmath>
+#include <limits>
 namespace plutom{
     template<typename T>
 
@@ -14,8 +17,13 @@ namespace plutom{
 
     template<typename T>
     constexpr T smoothstep_scalar(T edge0, T edge1, T val){
-        T t = clamp_scalar((x - edge0) / (edge1 - edge0), T(0), T(1));
+        T t = clamp_scalar((val - edge0) / (edge1 - edge0), T(0), T(1));
         return t * t * (T(3) - T(2) * t);
+    }
+
+    template<typename T>
+    constexpr bool almostequal(T a, T b, T eps = std::numeric_limits<T>::epsilon() * 100){
+        return std::abs(a - b) <= eps * std::max(T(1), std::max(std::abs(a), std::abs(b)));
     }
 
 }
