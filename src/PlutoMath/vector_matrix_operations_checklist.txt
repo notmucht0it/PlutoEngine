@@ -2,9 +2,6 @@
 
 3. Transform Matrices (mat4<T>)
 -------------------------------
-[ ] Translation matrix (translate(vec3))
-[ ] Scaling matrix (scale(vec3))
-[ ] Rotation matrix (rotate(angle, axis))
 [ ] Combine transforms (M = T * R * S)
 
 4. Projection & View Matrices

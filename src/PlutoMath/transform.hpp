@@ -46,9 +46,18 @@ namespace transform2D{
     return mat3<T>{
         c, -s, T(0),
         s,  c, T(0),
-        T(0), T(0), T(1)
-    };
-}
+        T(0), T(0), T(1)};
+    }
+
+    template<typename T>
+    constexpr mat3<T> trs(const vec2<T>& t,T theta,const vec2<T>& s) {
+        return translate(t) * rotate(theta) * scale(s);
+    }
+
+    template<typename T>
+    constexpr mat3<T> trs(T t,T theta,T s) {
+        return translate(t) * rotate(theta) * scale(s);
+    }
 }
 namespace transform3D{
 
