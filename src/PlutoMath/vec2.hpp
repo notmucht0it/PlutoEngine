@@ -120,6 +120,12 @@ namespace plutom{
             return std::sqrt((x - other.x)*(x - other.x) + (y - other.y)*(y - other.y));
         }
 
+        T norm() const{
+            static_assert(std::is_floating_point<T>::value, "distance() only available for float/double types");
+            return std::sqrt(x*x + y*y);
+        }
+
+
         constexpr T distance_squared(const vec2& other) const{
             return (x - other.x)*(x - other.x) + (y - other.y)*(y - other.y);
         }

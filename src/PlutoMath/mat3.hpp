@@ -224,6 +224,19 @@ namespace plutom{
             return {columns[0][i], columns[1][i], columns[2][i]};
         }
 
+        constexpr mat3<T> gramschimdt(T eps = std::numeric_limits<T>::epsilon()){
+            T tol = 1000*3*std::max(columns[0].norm(),
+                            std::max(columns[1].norm(),
+                                     columns[2].norm()));
+            mat3<T> orth;
+            for(int i = 0; i < 3; ++i){
+                vec3<T> u = columns[i] - orth*orth.transpose()*columns[i];
+                vec3<T> uNorm = u.normalize();
+                if(uNorm > tol) orth[i] = u / uNorm;
+            }
+            return orth;
+        }
+
     };
 
     template<typename T>
