@@ -16,6 +16,15 @@ constexpr float WID = 800.0, HIGH = 600.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+plutom::vec3f cameraPos   = plutom::vec3f(0.0f, 0.0f,  3.0f);
+plutom::vec3f cameraFront = plutom::vec3f(0.0f, 0.0f, -1.0f);
+plutom::vec3f cameraUp    = plutom::vec3f(0.0f, 1.0f,  0.0f);
+
+
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
 
 float percent = 0.0f;
 
@@ -50,6 +59,7 @@ int main(){
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // Sets callback so when a key pressed that function is excuted
     glfwSetKeyCallback(window, key_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     const Shader ourShader("shaders/shader.vs","shaders/shader.fs");
 
@@ -96,11 +106,6 @@ int main(){
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
-
-    const unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };  
 
 
     unsigned int VBO, VAO, EBO, textures[2];
@@ -165,11 +170,24 @@ int main(){
 
     //std::cout << trans << std::endl;
 
-    //plutom::mat4f model = plutom::transform3D::rotate(plutom::radians(-55.0f), plutom::vec3f(1.0f,0.0f,0.0f));
-    plutom::mat4f view = plutom::transform3D::translate(plutom::mat4f(1.0f),plutom::vec3f(0.0f,0.0f,-3.0f));
-    plutom::mat4f projection = plutom::perspective(plutom::radians(45.0f), WID/HIGH, 0.1f, 100.0f);
+    const plutom::vec3f cubePositions[] = {
+        plutom::vec3f(  0.0f,  0.0f,  0.0f),
+        plutom::vec3f( 2.0f,  5.0f, -15.0f),
+        plutom::vec3f(-1.5f, -2.2f, -2.5f),
+        plutom::vec3f(-3.8f, -2.0f, -12.3f),
+        plutom::vec3f( 2.4f, -0.4f, -3.5f),
+        plutom::vec3f(-1.7f,  3.0f, -7.5f),
+        plutom::vec3f( 1.3f, -2.0f, -2.5f),
+        plutom::vec3f( 1.5f,  2.0f, -2.5f),
+        plutom::vec3f( 1.5f,  0.2f, -1.5f),
+        plutom::vec3f(-1.3f,  1.0f, -1.5f)
+    };
 
     while(!glfwWindowShouldClose(window)){
+
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         // Runs through possible events, key press, resizing, etc.
         glfwPollEvents(); 
 
@@ -186,20 +204,40 @@ int main(){
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textures[1]);
 
+        //const plutom::mat4f view = plutom::transform3D::translate(plutom::mat4f(1.0f),plutom::vec3f(0.0f,0.0f,-4.0f));
+        const plutom::mat4f projection = plutom::perspective(plutom::radians(45.0f), WID/HIGH, 0.1f, 100.0f);
+
         ourShader.use();
-
-        plutom::mat4f model = plutom::mat4f::identity();
-        model = plutom::transform3D::rotate(model, static_cast<float>(glfwGetTime()) * plutom::radians(50.0f), plutom::vec3f(0.5f,1.0f,0.0f));
-
         ourShader.setFloat("visible",percent);
-
-        ourShader.setMat4f("model", model);
-        ourShader.setMat4f("view", view);
         ourShader.setMat4f("projection", projection);
 
-
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        constexpr float radius = 10.0f;
+        const float camX = sin(glfwGetTime()) * radius;
+        const float camZ = cos(glfwGetTime()) * radius;
+        const plutom::mat4f view = plutom::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+
+        ourShader.setMat4f("view", view);
+        for (unsigned int i = 0; i < 10; ++i) {
+            // First translate
+
+            //float angle = 20.0f * static_cast<float>(i)* glfwGetTime();
+            float angle = 20.0f * i;
+            if(i % 3 == 4)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
+                angle = glfwGetTime() * 25.0f;
+            // Then rotate *on the translated matrix*
+            plutom::mat4f model = plutom::transform3D::translate(plutom::mat4f(1.0f), cubePositions[i]);
+            //plutom::mat4f model = plutom::transform3D::translate(plutom::mat4f(1.0f), plutom::vec3f(1.0f, 0.3f, -0.5f));
+            model = plutom::transform3D::rotate(model ,plutom::radians(angle), plutom::vec3f(1.0f, 0.3f, -0.5f));
+            ourShader.setMat4f("model", model);
+
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        }
+
+
         //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         glfwSwapBuffers(window);
     }
@@ -221,5 +259,21 @@ void key_callback(GLFWwindow* window, const int key, int scancode, const int act
     if (key == GLFW_KEY_UP && action == GLFW_PRESS && percent <= 0.9f)
         percent += 0.1f;
     if (key == GLFW_KEY_DOWN && action == GLFW_PRESS && percent >= 0.1f)
+        percent -= 0.1;
+    const float cameraSpeed = 10.0f * deltaTime; // adjust accordingly
+    if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraPos += cameraSpeed * cameraFront;
+    if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraPos -= cameraSpeed * cameraFront;
+    if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraPos -= cameraUp.cross(cameraFront).normalize() * cameraSpeed;
+    if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraPos += cameraUp.cross(cameraFront).normalize() * cameraSpeed;
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (yoffset > 0 && percent <= 0.9f)
+        percent += 0.1f;
+    if (yoffset < 0 && percent >= 0.1f)
         percent -= 0.1f;
 }

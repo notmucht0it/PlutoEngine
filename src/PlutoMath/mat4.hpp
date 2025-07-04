@@ -77,54 +77,14 @@ namespace plutom{
         }
 
         constexpr mat4 operator*(const mat4& other) const {
-            mat2<T> a = {columns[0][0], columns[1][0],
-                         columns[0][1], columns[1][1]};
-            mat2<T> b = {columns[0][2], columns[1][2],
-                         columns[0][3], columns[1][3]};
-            mat2<T> c = {columns[2][0], columns[3][0],
-                         columns[2][1], columns[3][1]};
-            mat2<T> d = {columns[2][2], columns[3][2],
-                         columns[2][3], columns[3][3]};
-
-            mat2<T> e = {other.columns[0][0], other.columns[1][0],
-                         other.columns[0][1], other.columns[1][1]};
-            mat2<T> f = {other.columns[0][2], other.columns[1][2],
-                         other.columns[0][3], other.columns[1][3]};
-            mat2<T> g = {other.columns[2][0], other.columns[3][0],
-                         other.columns[2][1], other.columns[3][1]};
-            mat2<T> h = {other.columns[2][2], other.columns[3][2],
-                         other.columns[2][3], other.columns[3][3]};
-
-            mat2<T> M1 = (a + d) * (e + h);
-            mat2<T> M2 = (c + d) * e;
-            mat2<T> M3 = a * (f - h);
-            mat2<T> M4 = d * (g - e);
-            mat2<T> M5 = (a + b) * h;
-            mat2<T> M6 = (c - a) * (e + f);
-            mat2<T> M7 = (b - d) * (g + h);
-
-            mat2<T> C00 = M1 + M4 - M5 + M7;
-            mat2<T> C01 = M3 + M5;
-            mat2<T> C10 = M2 + M4;
-            mat2<T> C11 = M1 - M2 + M3 + M6;
-
-            return mat4<T>{
-                // Column 0 (col 0 of result)
-                C00[0][0], C00[1][0],
-                C10[0][0], C10[1][0],
-
-                // Column 1 (col 1 of result)
-                C00[0][1], C00[1][1],
-                C10[0][1], C10[1][1],
-
-                // Column 2 (col 2 of result)
-                C01[0][0], C01[1][0],
-                C11[0][0], C11[1][0],
-
-                // Column 3 (col 3 of result)
-                C01[0][1], C01[1][1],
-                C11[0][1], C11[1][1]
-            };
+            mat4<T> ret{};
+            for (int i = 0; i < 4; ++i) {
+                const vec4<T> row_i = row(i);
+                for (int j = 0; j < 4; ++j) {
+                    ret[j][i] = row_i.dot(other.columns[j]);
+                }
+            }
+            return ret;
         }
 
         constexpr mat4 transpose() const{
@@ -136,7 +96,7 @@ namespace plutom{
             };
         }
 
-        constexpr mat3<T> minor(const std::size_t row, const std::size_t col){
+        constexpr mat3<T> minor(const std::size_t row, const std::size_t col) const{
             if(row >= 4 || col >= 4) throw std::out_of_range("Index out of bounds for 4 by 4 matrix");
 
             mat3<T> result;
@@ -156,8 +116,10 @@ namespace plutom{
         }
 
         constexpr T determinant() const{
-            return  columns[0][0] * minor(0,0).determinant() - columns[1][0] * minor(0,1).determinant() +
-                    columns[2][0] * minor(0,2).determinant() - columns[3][0] * minor(0,3).determinant();
+            return  columns[0][0] * minor(static_cast<std::size_t>(0),static_cast<std::size_t>(0)).determinant() -
+                    columns[1][0] * minor(static_cast<std::size_t>(0),static_cast<std::size_t>(1)).determinant() +
+                    columns[2][0] * minor(static_cast<std::size_t>(0),static_cast<std::size_t>(2)).determinant() -
+                    columns[3][0] * minor(static_cast<std::size_t>(0),static_cast<std::size_t>(3)).determinant();
         }
 
         constexpr mat4 cofactor() const{
@@ -238,7 +200,7 @@ namespace plutom{
 
         constexpr vec4<T> row(std::size_t i) const {
             if(i >= 4) throw std::out_of_range("Row index must be less than 4");
-            return {columns[0][i], columns[1][i], columns[2][i]};
+            return {columns[0][i], columns[1][i], columns[2][i],  columns[3][i]};
         }
 
         constexpr mat4<T> gramschimdt(T eps = std::numeric_limits<T>::epsilon()){

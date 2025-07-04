@@ -65,29 +65,14 @@ namespace plutom{
         }
 
         constexpr mat2 operator*(const mat2& other) const {
-            T a = columns[0][0], b = columns[1][0];
-            T c = columns[0][1], d = columns[1][1];
-
-            T e = other.columns[0][0], f = other.columns[1][0];
-            T g = other.columns[0][1], h = other.columns[1][1];
-
-            T M1 = (a + d) * (e + h);
-            T M2 = (c + d) * e;
-            T M3 = a * (f - h);
-            T M4 = d * (g - e);
-            T M5 = (a + b) * h;
-            T M6 = (c - a) * (e + f);
-            T M7 = (b - d) * (g + h);
-
-            T C00 = M1 + M4 - M5 + M7;
-            T C01 = M3 + M5;
-            T C10 = M2 + M4;
-            T C11 = M1 - M2 + M3 + M6;
-
-            return mat2{
-                vec2<T>{C00, C10},
-                vec2<T>{C01, C11}
-            };
+            mat2<T> ret{};
+            for (int i = 0; i < 2; ++i) {
+                const vec2<T> row_i = row(i);
+                for (int j = 0; j < 2; ++j) {
+                    ret[j][i] = row_i.dot(other.columns[j]);
+                }
+            }
+            return ret;
         }
 
         constexpr mat2 transpose() const{
@@ -101,7 +86,7 @@ namespace plutom{
             return columns[0].x * columns[1].y - columns[1].x * columns[0].y;
         }
 
-        constexpr T minor(const std::size_t row, const std::size_t col){
+        constexpr T minor(const std::size_t row, const std::size_t col) const{
             if(row >= 2 || col >= 2) throw std::out_of_range("Index out of bounds for 2 by 2 matrix");
 
             std::size_t r = 0;
