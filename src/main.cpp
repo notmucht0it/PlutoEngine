@@ -1,32 +1,28 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
-#include "PlutoMath/transform.hpp"
-#include "util/shader.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-
+#include "input/camera.hpp"
+#include "render/shader.hpp"
 #include "PlutoMath/plutomath.hpp"
-
-constexpr GLuint WIDTH = 800, HEIGHT = 600;
-
-constexpr float WID = 800.0, HIGH = 600.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
-plutom::vec3f cameraPos   = plutom::vec3f(0.0f, 0.0f,  3.0f);
-plutom::vec3f cameraFront = plutom::vec3f(0.0f, 0.0f, -1.0f);
-plutom::vec3f cameraUp    = plutom::vec3f(0.0f, 1.0f,  0.0f);
-
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
-
 float percent = 0.0f;
+
+constexpr GLuint WIDTH = 800, HEIGHT = 600;
+constexpr float WID = 800.0, HIGH = 600.0f;
+
+Camera cam(plutom::vec3f(0.0f, 0.0f, -7.0f));
+float lastX = WID / 2.0f;
+float lastY = HIGH / 2.0f;
+bool first_mouse = true;
 
 int main(){
 
@@ -37,8 +33,7 @@ int main(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
-    if (window == nullptr)
-    {
+    if (window == nullptr){
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -60,6 +55,9 @@ int main(){
     // Sets callback so when a key pressed that function is excuted
     glfwSetKeyCallback(window, key_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     const Shader ourShader("shaders/shader.vs","shaders/shader.fs");
 
@@ -108,7 +106,7 @@ int main(){
     };
 
 
-    unsigned int VBO, VAO, EBO, textures[2];
+    unsigned int VBO, VAO, textures[2];
     glGenVertexArrays(1,&VAO);
     glGenBuffers(1, &VBO);
     //glGenBuffers(1,&EBO);
@@ -170,7 +168,7 @@ int main(){
 
     //std::cout << trans << std::endl;
 
-    const plutom::vec3f cubePositions[] = {
+    constexpr plutom::vec3f cubePositions[] = {
         plutom::vec3f(  0.0f,  0.0f,  0.0f),
         plutom::vec3f( 2.0f,  5.0f, -15.0f),
         plutom::vec3f(-1.5f, -2.2f, -2.5f),
@@ -185,7 +183,7 @@ int main(){
 
     while(!glfwWindowShouldClose(window)){
 
-        float currentFrame = glfwGetTime();
+        const auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         // Runs through possible events, key press, resizing, etc.
@@ -205,43 +203,33 @@ int main(){
         glBindTexture(GL_TEXTURE_2D, textures[1]);
 
         //const plutom::mat4f view = plutom::transform3D::translate(plutom::mat4f(1.0f),plutom::vec3f(0.0f,0.0f,-4.0f));
-        const plutom::mat4f projection = plutom::perspective(plutom::radians(45.0f), WID/HIGH, 0.1f, 100.0f);
+        const plutom::mat4f projection = plutom::perspective(plutom::radians(cam.Zoom), WID/HIGH, 0.1f, 100.0f);
 
         ourShader.use();
         ourShader.setFloat("visible",percent);
         ourShader.setMat4f("projection", projection);
 
         glBindVertexArray(VAO);
-        constexpr float radius = 10.0f;
-        const float camX = sin(glfwGetTime()) * radius;
-        const float camZ = cos(glfwGetTime()) * radius;
-        const plutom::mat4f view = plutom::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        const plutom::mat4f view = cam.get_view_matrix();
 
 
         ourShader.setMat4f("view", view);
         for (unsigned int i = 0; i < 10; ++i) {
             // First translate
 
-            //float angle = 20.0f * static_cast<float>(i)* glfwGetTime();
-            float angle = 20.0f * i;
-            if(i % 3 == 4)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
-                angle = glfwGetTime() * 25.0f;
+            float angle = 20.0f * static_cast<float>(i);
+            if(i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
+                angle = static_cast<float>(glfwGetTime()) * 25.0f;
             // Then rotate *on the translated matrix*
             plutom::mat4f model = plutom::transform3D::translate(plutom::mat4f(1.0f), cubePositions[i]);
             //plutom::mat4f model = plutom::transform3D::translate(plutom::mat4f(1.0f), plutom::vec3f(1.0f, 0.3f, -0.5f));
             model = plutom::transform3D::rotate(model ,plutom::radians(angle), plutom::vec3f(1.0f, 0.3f, -0.5f));
             ourShader.setMat4f("model", model);
-
-
             glDrawArrays(GL_TRIANGLES, 0, 36);
-
         }
-
-
         //glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
         glfwSwapBuffers(window);
     }
-
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     //glDeleteBuffers(1, &EBO);
@@ -262,13 +250,33 @@ void key_callback(GLFWwindow* window, const int key, int scancode, const int act
         percent -= 0.1;
     const float cameraSpeed = 10.0f * deltaTime; // adjust accordingly
     if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-        cameraPos += cameraSpeed * cameraFront;
+        cam.ProcessKeyboard(FORWARD,deltaTime);
     if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-        cameraPos -= cameraSpeed * cameraFront;
+        cam.ProcessKeyboard(BACK,deltaTime);
     if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
-        cameraPos -= cameraUp.cross(cameraFront).normalize() * cameraSpeed;
+        cam.ProcessKeyboard(LEFT,deltaTime);
     if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
-        cameraPos += cameraUp.cross(cameraFront).normalize() * cameraSpeed;
+        cam.ProcessKeyboard(RIGHT,deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
+    auto xpos = static_cast<float>(xposIn);
+    auto ypos = static_cast<float>(yposIn);
+
+    if (first_mouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+         first_mouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    cam.ProcessMouseMovement(xoffset,yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -276,4 +284,5 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
         percent += 0.1f;
     if (yoffset < 0 && percent >= 0.1f)
         percent -= 0.1f;
+    cam.ProcessMouseScroll(static_cast<float>(yoffset));
 }

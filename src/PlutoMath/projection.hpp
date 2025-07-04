@@ -92,13 +92,17 @@ namespace plutom{
     template<typename T>
     constexpr mat4<T> lookAt(const vec3<T> cam, const vec3<T> tar, const vec3<T> up={T(0), T(1), T(0)}) {
         mat4<T> ret = mat4<T>::identity();
+        mat4<T> retT = mat4<T>::identity();
         vec3<T> dir = (cam - tar).normalize();
-        vec3<T> right = (up.cross(dir)).normalize();
+        vec3<T> right = (up.normalize().cross(dir)).normalize();
         vec3<T> true_up = right.cross(dir);
-        ret[0][0] = right.x; ret[1][0] = right.y; ret[2][0] = right.z; ret[3][0] = -(right.dot(cam));
-        ret[0][1] = true_up.x; ret[1][1] = true_up.y; ret[2][1] = true_up.z; ret[3][1] = -(true_up.dot(cam));
-        ret[0][2] = -dir.x; ret[1][2] = -dir.y; ret[2][2] = -dir.z; ret[3][2] = -dir.dot(cam);
-        return ret;
+        ret[0][0] = right.x; ret[1][0] = right.y; ret[2][0] = right.z;
+        retT[3][0] = -cam.x;
+        ret[0][1] = true_up.x; ret[1][1] = true_up.y; ret[2][1] = true_up.z;
+        retT[3][1] = -cam.y;
+        ret[0][2] = -dir.x; ret[1][2] = -dir.y; ret[2][2] = -dir.z;
+        retT[3][2] = -cam.z;
+        return ret * retT;
     }
 
 }

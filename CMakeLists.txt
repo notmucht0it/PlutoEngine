@@ -24,9 +24,19 @@ target_include_directories(glad PUBLIC
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/external)
 
+file(GLOB_RECURSE SRC_FILES
+        src/*.cpp
+        render/*.cpp
+        input/*.cpp
+        app/*.cpp
+        scene/*.cpp
+        PlutoMath/*.cpp
+        util/*.cpp
+)
+
 # Your executable
 add_executable(${PROJECT_NAME}
-    src/main.cpp
+    ${SRC_FILES}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
