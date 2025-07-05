@@ -38,6 +38,8 @@ void input::key_callback(GLFWwindow* window, int key, int scancode, int action, 
         if (key == GLFW_KEY_A) inp->free_move.ProcessKeyboard(LEFT, inp->deltaTime);
         if (key == GLFW_KEY_D) inp->free_move.ProcessKeyboard(RIGHT, inp->deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        inp->free_move.show_debug_axis = !inp->free_move.show_debug_axis;
 }
 
 void input::mouse_callback(GLFWwindow* window, const double xpos, const double y_pos) {

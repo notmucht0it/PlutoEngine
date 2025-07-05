@@ -76,7 +76,8 @@ namespace plutom{
         const T f = 1 / std::tan(fovRad / 2);
         mat4<T> ret = mat4<T>();
         ret[0][0] = f / aspectRatio;
-        ret[1][1] = f;
+        // NOTE: Y-flip applied to match OpenGL's upward Y convention.
+        ret[1][1] = -f;
         ret[2][2] = (far + near) / (near - far);
         ret[2][3] = -1;
         ret[3][2] = (2 * far * near) / (near - far);

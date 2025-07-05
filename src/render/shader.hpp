@@ -109,7 +109,9 @@ public:
     }
 
     void setVec3f(const std::string &name, plutom::vec3f value) const{
-        glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+        if (glGetUniformLocation(ID, name.c_str()) == -1)
+            std::cout << "Name not found " << name << std::endl;
+        glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, plutom::value_ptr(value));
     }
 };
 

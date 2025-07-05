@@ -154,10 +154,7 @@ namespace transform3D{
 
     template<typename T>
     constexpr mat4<T> rotateX(T theta){
-        return mat4<T>{T(1),T(0),T(0),T(0),
-                       T(0), std::cos(-theta), std::sin(-theta),T(0),
-                       T(0),-std::sin(-theta), std::cos(-theta),T(0),
-                       T(0),T(0),T(0),T(1)};
+        return rotate(theta, vec3f(1.0f,0.0f,0.0f));
     }
 
     template<typename T>
@@ -167,10 +164,7 @@ namespace transform3D{
 
     template<typename T>
     constexpr mat4<T> rotateY(T theta){
-        return mat4<T>{std::cos(-theta),T(0),std::sin(-theta),T(0),
-                       T(0), T(1), T(0),T(0),
-                       -std::sin(-theta),T(0), std::cos(-theta),T(0),
-                       T(0),T(0),T(0),T(1)};
+        return rotate(theta, vec3f(0.0f,1.0f,0.0f));
     }
 
     template<typename T>
@@ -180,10 +174,7 @@ namespace transform3D{
 
     template<typename T>
     constexpr mat4<T> rotateZ(T theta){
-        return mat4<T>{std::cos(-theta),-std::sin(-theta),T(0),T(0),
-                       std::sin(-theta), std::cos(-theta),T(0),T(0),
-                       T(0),T(0),T(1),T(0),
-                       T(0),T(0),T(0),T(1)};
+        return rotate(theta, vec3f(0.0f,0.0f,1.0f));
     }
 
     template<typename T>

@@ -31,7 +31,7 @@ file(GLOB_RECURSE SRC_FILES
         app/*.cpp
         scene/*.cpp
         PlutoMath/*.cpp
-        util/*.cpp
+        src/util/*.cpp
 )
 
 # Your executable

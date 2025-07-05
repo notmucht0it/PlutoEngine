@@ -32,6 +32,8 @@ public:
     float MouseSensitivity;
     float Zoom;
 
+    bool show_debug_axis = true;
+
     explicit Camera(const plutom::vec3f pos = plutom::vec3f(0.0f), const plutom::vec3f up = plutom::vec3f(0.0f,1.0f,0.0f),
            const float yaw = YAW, const float pitch = PITCH) : Front(plutom::vec3f(0.0f, 0.0f, -1.0f)), MovementSpeed(CAMERA_SPEED),
                                                                MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {

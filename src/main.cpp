@@ -17,17 +17,26 @@ int main(){
 
     window win(WID,HIGH);
     if (win.initialize() != 0) throw std::runtime_error("Initialization failed");
-    const Shader ourShader("shaders/shader.vs","shaders/shader.fs");
     auto control = input(win.get_window(),WID,HIGH,plutom::vec3f(0.0f,0.0f,-3.0f));
 
     auto renderer = Renderer(win.get_window());
-    renderer.add_shader(ourShader);
+    renderer.add_shader(std::make_shared<Shader>("shaders/shader_no_tex.vs", "shaders/shader_light.fs"));
 
-    for (unsigned int i = 0; i < 15; ++i) {
-        renderer.add_shape(i,"cube",plutom::vec3f(i, 0.1f*i,3.0f*i),plutom::vec3f(0.5f),
-                    plutom::vec3f(1.0f, 0.3f, -0.5f),plutom::vec3f(1.0f),i * 10.0f,
-                    0.0f,36.0f,false,"../res/wall.jpg");
-    }
+
+    renderer.add_shape({
+        .type = "circle",
+        .sType = ShaderType::Lighting,
+        .color = plutom::vec3f(1.0f, 0.5f, 0.31f),
+        .position = plutom::vec3f(0.0f),
+        .scalingVector = plutom::vec3f(1.0f)
+    });
+
+    renderer.add_shader(std::make_shared<Shader>("shaders/shader_no_tex.vs","shaders/white.fs"));
+    renderer.add_shape({
+        .sType = ShaderType::Source,
+        .position = plutom::vec3f(1.2f, 1.0f, 2.0f),
+        .scalingVector = plutom::vec3f(0.1f)
+    });
 
     while(!glfwWindowShouldClose(win.get_window())){
 
@@ -36,7 +45,7 @@ int main(){
         lastFrame = currentFrame;
         control.update_delta(deltaTime);
         glfwPollEvents();
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.visualize(control.get_camera(),WID/HIGH,deltaTime);
         glfwSwapBuffers(win.get_window());
