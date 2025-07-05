@@ -107,6 +107,10 @@ public:
     void setMat4f(const std::string &name, plutom::mat4f value) const{
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, plutom::value_ptr(value));
     }
+
+    void setVec3f(const std::string &name, plutom::vec3f value) const{
+        glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+    }
 };
 
 #endif
